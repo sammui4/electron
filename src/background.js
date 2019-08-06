@@ -1,6 +1,11 @@
 'use strict'
 
-import { app, protocol, BrowserWindow,Menu } from 'electron'
+import {
+  app,
+  protocol,
+  BrowserWindow,
+  Menu
+} from 'electron'
 import {
   createProtocol,
   installVueDevtools
@@ -12,13 +17,28 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 let win
 
 // Scheme must be registered before the app is ready
-protocol.registerSchemesAsPrivileged([{scheme: 'app', privileges: { secure: true, standard: true } }])
+protocol.registerSchemesAsPrivileged([{
+  scheme: 'app',
+  privileges: {
+    secure: true,
+    standard: true
+  }
+}])
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
-  win = new BrowserWindow({ width: 1920, height: 1080, webPreferences: {
-    nodeIntegration: true
-  } })
+  win = new BrowserWindow({
+    width: 1920,
+    height: 1080,
+    webPreferences: {
+      // 跨域
+      webSecurity: false,
+      nodeIntegration: true
+    },
+    icon: `${__static}/app.ico`,
+    // 先不显示
+    show:false
+  })
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
@@ -33,29 +53,30 @@ function createWindow () {
   win.on('closed', () => {
     win = null
   })
+  // ready后show
+  win.on('ready-to-show',()=>{
+    win.show()
+  })
   createMenu()
 }
 
 // 顶部menu
-function createMenu(){
-   // darwin表示macOS，针对macOS的设置
+function createMenu() {
+  // darwin表示macOS，针对macOS的设置
   if (process.platform === 'darwin') {
-    const template = [
-      {
-        label: 'App Demo',
-        submenu: [
-          {
-              role: 'about'
-          },
-          {
-              role: 'quit'
-          }
-        ]
-      }
-    ]
+    const template = [{
+      label: 'App Demo',
+      submenu: [{
+          role: 'about'
+        },
+        {
+          role: 'quit'
+        }
+      ]
+    }]
     let menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
-  }else {
+  } else {
     Menu.setApplicationMenu(null)
   }
 }
@@ -84,10 +105,10 @@ app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
-  await installVueDevtools()
-} catch (e) {
-  console.error('Vue Devtools failed to install:', e.toString())
-}
+      await installVueDevtools()
+    } catch (e) {
+      console.error('Vue Devtools failed to install:', e.toString())
+    }
 
   }
   createWindow()

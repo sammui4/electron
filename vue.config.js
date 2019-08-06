@@ -21,7 +21,13 @@ module.exports = {
   pluginOptions:{
     electronBuilder: {
       builderOptions: {
-        productName:'供应商协作系统'
+        productName:'供应商协作系统',
+        win: {
+          icon: './public/app.ico'
+        },
+        mac: {
+          icon: './public/app.png'
+        },
       }
     }
   }
