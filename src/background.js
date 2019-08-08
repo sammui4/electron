@@ -1,21 +1,21 @@
 'use strict'
-
+import Update from './update'
 import {
   app,
   protocol,
   BrowserWindow,
-  Menu
+  Menu,
+  globalShortcut,
 } from 'electron'
 import {
   createProtocol,
   installVueDevtools
 } from 'vue-cli-plugin-electron-builder/lib'
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win
-
+let update
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{
   scheme: 'app',
@@ -29,7 +29,7 @@ function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
     width: 1920,
-    height: 1080,
+    height: 1080, // eslint-disable-next-line no-undef
     webPreferences: {
       // 跨域
       webSecurity: false,
@@ -39,7 +39,6 @@ function createWindow() {
     // 先不显示
     show:false
   })
-
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
@@ -52,12 +51,14 @@ function createWindow() {
 
   win.on('closed', () => {
     win = null
+    update = null
   })
   // ready后show
   win.on('ready-to-show',()=>{
     win.show()
   })
   createMenu()
+  update = new Update(win)
 }
 
 // 顶部menu
@@ -65,7 +66,7 @@ function createMenu() {
   // darwin表示macOS，针对macOS的设置
   if (process.platform === 'darwin') {
     const template = [{
-      label: 'App Demo',
+      label: '',
       submenu: [{
           role: 'about'
         },
@@ -77,7 +78,33 @@ function createMenu() {
     let menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
   } else {
-    Menu.setApplicationMenu(null)
+    // const template = [{
+    //   label: '操作',
+    //   submenu: [
+    //     {
+    //       label: '重新加载',
+    //       accelerator: 'CmdOrCtrl+R',
+    //       click: function (item, focusedWindow) {
+    //           if (focusedWindow) {
+    //               // on reload, start fresh and close any old
+    //               // open secondary windows
+    //               if (focusedWindow.id === 1) {
+    //                   BrowserWindow.getAllWindows().forEach(function (win) {
+    //                       if (win.id > 1) {
+    //                           win.close()
+    //                       }
+    //                   })
+    //               }
+    //               focusedWindow.reload()
+    //           }
+    //       }
+    //     }
+    //   ]
+    // }]
+    // let menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(null);
+    // 上下文菜单
+    
   }
 }
 
@@ -103,14 +130,18 @@ app.on('activate', () => {
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
   if (isDevelopment && !process.env.IS_TEST) {
-    // Install Vue Devtools
+
     try {
       await installVueDevtools()
+      // await BrowserWindow.addDevToolsExtension('/Users/WIN10/AppData/Local/Google/Chrome/User Data/Profile 1/Extensions/nhdogjmejiglipccpnnnanhbledajbpd/5.1.1_0')
     } catch (e) {
       console.error('Vue Devtools failed to install:', e.toString())
     }
-
   }
+  // 在开发环境和生产环境均可通过快捷键打开devTools
+  globalShortcut.register('CommandOrControl+Shift+i', function () {
+    win.webContents.openDevTools()
+  })
   createWindow()
 })
 
