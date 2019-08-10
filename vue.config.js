@@ -2,7 +2,7 @@
  * @Author: w
  * @Date: 2019-08-05 16:11:20
  * @LastEditors: w
- * @LastEditTime: 2019-08-10 18:16:46
+ * @LastEditTime: 2019-08-10 19:00:41
  */
 const path = require('path');
 
@@ -29,11 +29,13 @@ module.exports = {
       builderOptions: {
         productName:'新供应商协作系统',
         win: {
+          target: ["nsis","zip"],
           icon: './public/app.ico',
           artifactName: "${productName}_setup_${version}.${ext}"      //一定要设置，不然会出问题
         },
        
         mac: {
+          target: ["dmg","zip"],
           icon: './public/app.png',
           artifactName: "${productName}_setup_${version}.${ext}"      //一定要设置，不然会出现打包的文件名和latest.yml不一样的问题
         },
@@ -48,7 +50,6 @@ module.exports = {
           url: "http://localhost:888/client"
         },
         nsis: {
-          /** 压缩形式，默认normal;store打包最快，适合测试;maximum打包体积最小，适合生产模式 **/
           oneClick: false,
           perMachine: true,
           allowElevation: true,
