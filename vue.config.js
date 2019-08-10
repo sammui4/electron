@@ -2,7 +2,7 @@
  * @Author: w
  * @Date: 2019-08-05 16:11:20
  * @LastEditors: w
- * @LastEditTime: 2019-08-10 10:47:16
+ * @LastEditTime: 2019-08-10 15:46:04
  */
 const path = require('path');
 
@@ -27,10 +27,15 @@ module.exports = {
   pluginOptions:{
     electronBuilder: {
       builderOptions: {
-        productName:'electron-cpms',
+        productName:'新供应商协作系统',
         win: {
           icon: './public/app.ico',
           artifactName: "${productName}_setup_${version}.${ext}"      //一定要设置，不然会出问题
+        },
+       
+        mac: {
+          icon: './public/app.png',
+          artifactName: "${productName}_setup_${version}.${ext}"      //一定要设置，不然会出现打包的文件名和latest.yml不一样的问题
         },
         publish: {
           // provider: 'github',
@@ -42,11 +47,9 @@ module.exports = {
           provider: "generic",
           url: "http://localhost:888/client"
         },
-        mac: {
-          icon: './public/app.png',
-          artifactName: "${productName}_setup_${version}.${ext}"      //一定要设置，不然会出问题
-        },
         nsis: {
+          /** 压缩形式，默认normal;store打包最快，适合测试;maximum打包体积最小，适合生产模式 **/
+          compression: "maximum",
           oneClick: false,
           perMachine: true,
           allowElevation: true,
