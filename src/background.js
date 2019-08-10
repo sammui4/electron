@@ -1,12 +1,21 @@
+/*
+ * @Author: w
+ * @Date: 2019-08-06 17:58:22
+ * @LastEditors: w
+ * @LastEditTime: 2019-08-10 15:13:23
+ */
+
 'use strict'
-import Update from './update'
+// import Update from './update.js'
 import {
   app,
   protocol,
   BrowserWindow,
   Menu,
   globalShortcut,
+  ipcMain   //更新用的
 } from 'electron'
+import { autoUpdater } from "electron-updater" //更新用的
 import {
   createProtocol,
   installVueDevtools
@@ -51,14 +60,80 @@ function createWindow() {
 
   win.on('closed', () => {
     win = null
-    update = null
   })
+  
   // ready后show
   win.on('ready-to-show',()=>{
-    win.show()
+    win.show();
+    updateHandle();
+    // update = new Update(win)
   })
   createMenu()
-  update = new Update(win)
+  
+}
+
+function updateHandle() {
+  let message = {
+    error: {
+      status: -1,
+      msg:'检查更新出错'
+    },
+    checking: {
+      status: -0,
+      msg:'正在检查更新……'
+    },
+    updateAva:{
+      status: 1,
+      msg:'检测到新版本，正在下载……'
+    },
+    updateNotAva:{
+      status: -1,
+      msg:'现在使用的就是最新版本，不用更新'
+    },
+    updateFinish:{
+      status: 2,
+      msg:'下载成功'
+    }
+  };
+  const os = require('os');
+  let uploadUrl = 'http://172.20.200.84:888/client';
+  autoUpdater.setFeedURL(uploadUrl);
+  autoUpdater.on('error', function (error) {
+    sendUpdateMessage(message.error)
+  });
+  autoUpdater.on('checking-for-update', function () {
+    sendUpdateMessage(message.checking)
+  });
+  autoUpdater.on('update-available', function (info) {
+    sendUpdateMessage(message.updateAva)
+  });
+  autoUpdater.on('update-not-available', function (info) {
+    sendUpdateMessage(message.updateNotAva)
+  });
+
+  // 更新下载进度事件
+  autoUpdater.on('download-progress', function (progressObj) {
+    win.webContents.send('downloadProgress', progressObj)
+  })
+  autoUpdater.on('update-downloaded', function (event, releaseNotes, releaseName, releaseDate, updateUrl, quitAndUpdate) {
+    
+    ipcMain.on('isUpdateNow', (e, arg) => {
+      console.log("开始更新");
+      //some code here to handle event
+      autoUpdater.quitAndInstall();
+    });
+    win.webContents.send('isUpdateNow')
+  });
+
+  ipcMain.on("checkForUpdate",()=>{
+      //执行自动更新检查
+      autoUpdater.checkForUpdates();
+  })
+}
+
+// 通过main进程发送事件给renderer进程，提示更新信息
+function sendUpdateMessage(text) {
+  win.webContents.send('message', text)
 }
 
 // 顶部menu

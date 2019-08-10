@@ -2,7 +2,7 @@
  * @Author: w
  * @Date: 2019-08-05 16:11:20
  * @LastEditors: w
- * @LastEditTime: 2019-08-09 17:42:21
+ * @LastEditTime: 2019-08-10 10:47:16
  */
 const path = require('path');
 
@@ -32,20 +32,28 @@ module.exports = {
           icon: './public/app.ico',
           artifactName: "${productName}_setup_${version}.${ext}"      //一定要设置，不然会出问题
         },
+        publish: {
+          // provider: 'github',
+          // repo: 'xxxx', // git仓库
+          // owner: 'xxxx', // 拥有者
+          // token: 'xxxxxxxxxxxxxxx', // gitToken
+          // releaseType: 'release',
+          // publishAutoUpdate: true, // 发布自动更新（需要配置GH_TOKEN）。 默认true
+          provider: "generic",
+          url: "http://localhost:888/client"
+        },
         mac: {
           icon: './public/app.png',
           artifactName: "${productName}_setup_${version}.${ext}"      //一定要设置，不然会出问题
         },
-        // nsis: {
-        //   oneClick: true,
-        //   perMachine: true,
-        //   allowElevation: true,
-        //   allowToChangeInstallationDirectory: true,
-        //   createDesktopShortcut: true,
-        //   runAfterFinish: true,
-        //   installerIcon: "./build/icon.ico",
-        //   uninstallerIcon: "./build/icon.ico"
-        // },
+        nsis: {
+          oneClick: false,
+          perMachine: true,
+          allowElevation: true,
+          allowToChangeInstallationDirectory: true,
+          createDesktopShortcut: true,
+          runAfterFinish: true,
+        },
       }
     }
   }

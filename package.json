@@ -1,6 +1,7 @@
 {
   "name": "electron-cpms",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "description": "remark",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
