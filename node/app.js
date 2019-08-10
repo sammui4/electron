@@ -2,7 +2,7 @@
  * @Author: w
  * @Date: 2019-08-10 15:47:29
  * @LastEditors: w
- * @LastEditTime: 2019-08-10 15:49:08
+ * @LastEditTime: 2019-08-10 16:49:23
  */
 const express = require('express')
 const app = express();
@@ -15,6 +15,10 @@ app.use('/client',function(req,res,next){
 	console.log("请求的req.url",req.url);
 	next();
 });
+
+app.use('/update',(req,res,next)=>{
+
+})
 
 app.use('/client',express.static(path.join(__dirname, 'client'))); 
 

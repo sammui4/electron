@@ -2,23 +2,31 @@
  * @Author: w
  * @Date: 2019-08-05 16:11:20
  * @LastEditors: w
- * @LastEditTime: 2019-08-10 15:20:32
+ * @LastEditTime: 2019-08-10 18:10:09
  -->
 <template>
   <transition name="fade">
     <el-dialog
-      title="应用更新"
       :visible.sync="msg.show"
-      class=""
       :close-on-click-modal="false"
       @closed="close"
       append-to-body
-      width="900px">
-
-      <el-progress :percentage="msg.percent"></el-progress>
+      class="update"
+      width="480px">
+      <p v-text="msg.title" class="title"></p>
+      <div class="progress-wrapper">
+        
+        <ul class="update-list">
+          <li v-for="(item,v) in msg.updateList" :key="v">
+            <span v-text="v+1"></span>.<span v-text="item.text"></span>
+          </li>
+        </ul>
+        <el-progress :percentage="msg.percent"></el-progress>
+      </div>
+      
       <div class="dialog-footer" slot="footer">
-        <el-button size="small" @click="updateApp" type="primary">确定</el-button>
-        <!-- <el-button size="small" @click="msg.show = false">取消</el-button> -->
+        <el-button size="small" @click="updateApp" type="primary" :loading="msg.loading">确定</el-button>
+        <el-button size="small" @click="cancel()" v-if="msg.loading==true">取消</el-button>
       </div>
     </el-dialog>
     
@@ -29,6 +37,26 @@
 import { ipcRenderer } from "electron";
 export default {
   name: "update",
+  props: {
+    msg:{
+      type:Object,
+      required:true,
+      default(){
+        return {
+          show:false,
+          percent:0,
+          updateList:[],
+          title:'',
+          loading:false  
+        }
+      }
+    }
+  },
+  data(){
+    return{
+      
+    }
+  },
   methods: {
     close() {
       ipcRenderer.removeAllListeners(["message", "downloadProgress", "isUpdateNow"]);//remove只能移除单个事件，单独封装removeAll移除所有事件
@@ -37,27 +65,16 @@ export default {
     updateApp() {
       ipcRenderer.send("checkForUpdate");
     },
-    closeAndInstall(){
-      
+    cancel(){
+      this.msg.show = false
     }
   },
-  props: {
-    msg:{
-      type:Object,
-      required:true,
-      default(){
-        return {
-        show:false,
-        percent:0   
-        }
-      }
-    }
-  }
+  
 }
 </script>
 
 
-<style>
+<style lang="scss" scoped>
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
@@ -66,22 +83,41 @@ export default {
   opacity: 0;
 }
 
-.percentage {
-  margin-top: 20px;
-}
 
-.progress {
-  width: 350px;
-  height: 30px;
-  border: 1px solid #cccccc;
-  border-radius: 8px;
-  margin: 10px auto;
-}
-
-.progress .length {
-  background-color: #e4393c;
-  border-radius: 8px;
-  width: 10px;
-  height: 30px;
+// .bg{
+//   position: relative;
+//   top:-60px;
+//   left:-20px;
+//   width: 420px;
+//   height: 300px;
+//   background: url('../assets/download.png');
+// }
+.update{
+  /deep/ .el-dialog__header{
+    background: url('../assets/images/download.png');
+  }
+  /deep/ .el-dialog__body{
+    background: url('../assets/images/download.png');
+    background-position-y: -30px;
+  }
+  /deep/ .el-icon-close{
+    color: #fff;
+  }
+  .progress-wrapper{
+    margin-top: 40px;
+  }
+  .update-list{
+    margin-bottom: 30px;
+    li{
+      margin-bottom: 10px;
+      color:#5A5A5A;
+    }
+  }
+  .title{
+    position: relative;
+    top:-25px;
+    color:#fff;
+    font-size: 24px;
+  }
 }
 </style>

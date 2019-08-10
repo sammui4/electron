@@ -2,16 +2,16 @@
  * @Author: w
  * @Date: 2019-08-06 17:58:22
  * @LastEditors: w
- * @LastEditTime: 2019-08-10 15:13:23
+ * @LastEditTime: 2019-08-10 18:27:02
  */
 
 'use strict'
-// import Update from './update.js'
 import {
   app,
   protocol,
   BrowserWindow,
   Menu,
+  MenuItem,
   globalShortcut,
   ipcMain   //更新用的
 } from 'electron'
@@ -66,7 +66,6 @@ function createWindow() {
   win.on('ready-to-show',()=>{
     win.show();
     updateHandle();
-    // update = new Update(win)
   })
   createMenu()
   
@@ -87,11 +86,11 @@ function updateHandle() {
       msg:'检测到新版本，正在下载……'
     },
     updateNotAva:{
-      status: -1,
+      status: 2,
       msg:'现在使用的就是最新版本，不用更新'
     },
     updateFinish:{
-      status: 2,
+      status: 3,
       msg:'下载成功'
     }
   };
@@ -153,33 +152,34 @@ function createMenu() {
     let menu = Menu.buildFromTemplate(template)
     Menu.setApplicationMenu(menu)
   } else {
-    // const template = [{
-    //   label: '操作',
-    //   submenu: [
-    //     {
-    //       label: '重新加载',
-    //       accelerator: 'CmdOrCtrl+R',
-    //       click: function (item, focusedWindow) {
-    //           if (focusedWindow) {
-    //               // on reload, start fresh and close any old
-    //               // open secondary windows
-    //               if (focusedWindow.id === 1) {
-    //                   BrowserWindow.getAllWindows().forEach(function (win) {
-    //                       if (win.id > 1) {
-    //                           win.close()
-    //                       }
-    //                   })
-    //               }
-    //               focusedWindow.reload()
-    //           }
-    //       }
-    //     }
-    //   ]
-    // }]
-    // let menu = Menu.buildFromTemplate(template)
-    Menu.setApplicationMenu(null);
+    const template = [{
+      label: '操作',
+      submenu: [
+        {
+          label: '重新加载',
+          accelerator: 'CmdOrCtrl+R',
+          click: function (item, focusedWindow) {
+              if (focusedWindow) {
+                  // on reload, start fresh and close any old
+                  // open secondary windows
+                  if (focusedWindow.id === 1) {
+                      BrowserWindow.getAllWindows().forEach(function (win) {
+                          if (win.id > 1) {
+                              win.close()
+                          }
+                      })
+                  }
+                  focusedWindow.reload()
+              }
+          }
+        }
+      ]
+    }]
+    let menu = Menu.buildFromTemplate(template)
+    Menu.setApplicationMenu(menu);
+    // Menu.setApplicationMenu(null);
     // 上下文菜单
-    
+
   }
 }
 

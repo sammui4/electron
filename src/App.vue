@@ -2,7 +2,7 @@
  * @Author: w
  * @Date: 2019-08-05 16:11:20
  * @LastEditors: w
- * @LastEditTime: 2019-08-10 15:08:08
+ * @LastEditTime: 2019-08-10 18:29:17
  -->
 <template>
   <div id="app">
@@ -30,13 +30,21 @@ export default {
       msg: {
         show: false,
         percent: 0,
-        install: false
+        install: false,
+        updateList:[
+          {
+            "text":"暂时屏蔽未完善的立即同步功能。"
+          },{
+            "text":"暂时屏蔽未完善的立即同步功能。"
+          }
+        ],
+        title:'0.3.1版本说明'
       }
     };
   },
   mounted() {
     // ipcRenderer.send("checkForUpdate");
-    this.updateApp();
+    // this.updateApp();
     this.returnMsg();
     this.download();
     this.update();
@@ -46,13 +54,28 @@ export default {
       ipcRendereron.on("downloadProgress", (event, data) => {
         this.percent = data.percent.toFixed(2);
         if (data.percent >= 100) {
-          // this.show = false;
+          this.show = false;
         }
       });
     },
     returnMsg() {
       ipcRenderer.on("message", (event, data) => {
-        this.$message.info(`${data.msg}`);
+        switch(data.status){
+          case -1:
+            this.$message.error(`${data.msg}`);
+          break;
+          case 0:
+            this.$message.info(`${data.msg}`);
+          break;
+          case 1:
+            this.msg.loading = true;
+            this.$message.success(`${data.msg}`);
+          break;
+          default:
+            this.msg.loading = false;
+            this.$message.success(`${data.msg}`);
+          break;
+        }
       });
     },
     download() {
@@ -85,5 +108,12 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+*{
+  margin: 0;
+  padding: 0;
+}
+ul,li{
+  list-style: none;
 }
 </style>

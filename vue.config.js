@@ -2,7 +2,7 @@
  * @Author: w
  * @Date: 2019-08-05 16:11:20
  * @LastEditors: w
- * @LastEditTime: 2019-08-10 15:46:04
+ * @LastEditTime: 2019-08-10 18:16:46
  */
 const path = require('path');
 
@@ -49,7 +49,6 @@ module.exports = {
         },
         nsis: {
           /** 压缩形式，默认normal;store打包最快，适合测试;maximum打包体积最小，适合生产模式 **/
-          compression: "maximum",
           oneClick: false,
           perMachine: true,
           allowElevation: true,
