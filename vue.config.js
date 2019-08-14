@@ -40,7 +40,7 @@ module.exports = {
           icon: './public/app.png',
           artifactName: "${productName}_setup_${version}.${ext}"      //一定要设置，不然会出现打包的文件名和latest.yml不一样的问题
         },
-        asar:false,         // 不打包成asar文件，默认为true
+        asar:false,         // 打包成asar文件，默认为true
         publish: {
           // provider: 'github',
           // repo: 'xxxx', // git仓库
